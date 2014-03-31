@@ -54,9 +54,14 @@ def login():
         else:
             session['logged_in'] = True
             flash('You were logged in')
-            return redirect(url_for('show_entries'))
+            return 'Logged in'
     return render_template('login.html', error=error, form=form)
 
+
+@app.route('/', methods=['GET'])
+def index():
+    form = LoginForm()
+    return render_template('login.html', form=form)
 
 if __name__ == '__main__':
     app.run()
