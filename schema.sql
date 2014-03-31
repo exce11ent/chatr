@@ -10,5 +10,6 @@ create table messages (
   id integer primary key autoincrement,
   sender integer not null,
   receiver integer not null,
-  Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+  Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+  text text not null
 );
