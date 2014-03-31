@@ -2,6 +2,7 @@ import os
 import sqlite3
 from flask import Flask, request, session, g, redirect, url_for, abort, \
     render_template, flash
+from LoginForm import LoginForm
 
 #create application
 app = Flask(__name__)
@@ -39,6 +40,22 @@ def init_db():
         with app.open_resource('schema.sql', mode='r') as f:
             db.cursor().executescript(f.read())
         db.commit()
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    error = None
+    form = LoginForm()
+    if request.method == 'POST':
+        if request.form['username'] != app.config['USERNAME']:
+            error = 'Invalid username'
+        elif request.form['password'] != app.config['PASSWORD']:
+            error = 'Invalid password'
+        else:
+            session['logged_in'] = True
+            flash('You were logged in')
+            return redirect(url_for('show_entries'))
+    return render_template('login.html', error=error, form=form)
 
 
 if __name__ == '__main__':
