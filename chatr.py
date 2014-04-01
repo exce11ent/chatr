@@ -2,7 +2,7 @@ import os
 import sqlite3
 from flask import Flask, request, session, g, redirect, url_for, abort, \
     render_template, flash
-from LoginForm import LoginForm
+from LoginForm import LoginForm, MessageForm
 
 #create application
 app = Flask(__name__)
@@ -48,13 +48,13 @@ def login():
     form = LoginForm()
     if request.method == 'POST':
         if request.form['username'] != app.config['USERNAME']:
-            error = 'Invalid username'
+            return redirect(url_for('/'))
         elif request.form['password'] != app.config['PASSWORD']:
-            error = 'Invalid password'
+            return redirect(url_for('/'))
         else:
             session['logged_in'] = True
             flash('You were logged in')
-            return 'Logged in'
+            return redirect(url_for('chat'))
     return render_template('login.html', error=error, form=form)
 
 
@@ -62,6 +62,25 @@ def login():
 def index():
     form = LoginForm()
     return render_template('login.html', form=form)
+
+
+@app.route('/chat', methods=['GET'])
+def chat():
+    db = get_db()
+    cursor = db.execute('select * from messages order by Timestamp DESC')
+    messages = cursor.fetchall()
+
+    form = MessageForm()
+
+    return render_template('chat.html', messages=messages, form=form)
+
+
+@app.route('/add_message', methods=['POST'])
+def add_message():
+    db = get_db()
+    db.execute('INSERT INTO messages (sender, receiver, text) VALUES (0, 1, ?)', [request.form['body']])
+    db.commit()
+    return redirect(url_for('chat'))
 
 if __name__ == '__main__':
     app.run()

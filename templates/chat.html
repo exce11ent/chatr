@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<form method="POST" action="/add_message">
+    {{ form.csrf_token }}
+    {{ form.body.label }}
+    {{ form.body }}
+    <input type="submit" value="Send">
+</form>
+
+{% for message in messages %}
+    <li><h2>{{ message.text|safe }}</h2>{{ message.Timestamp }}
+{% else %}
+    <li><em>Unbelievable.  No messages here so far</em>
+{% endfor %}
+
+{% endblock %}
